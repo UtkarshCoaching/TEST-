@@ -483,4 +483,4 @@ function displayRankings() {
         console.error("র‍্যাঙ্কিং লোড করতে সমস্যা হয়েছে:", error);
         rankListElem.innerHTML = '<li>র র‍্যাঙ্কিং লোড করা যায়নি।</li>';
     });
-}
+} 
