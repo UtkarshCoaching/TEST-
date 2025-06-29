@@ -22,13 +22,17 @@ body {
     box-sizing: border-box;
     position: relative;
 }
-.start-screen, .quiz-screen, .result-screen {
+
+/* সকল স্ক্রিন প্রাথমিকভাবে লুকানো থাকবে */
+.name-input-screen, .start-screen, .quiz-screen, .result-screen {
     display: none;
     background-color: #f2f2f3; /* Keep background consistent */
     border-radius: 10px;
     padding: 20px;
 }
-.start-screen.active, .quiz-screen.active, .result-screen.active {
+
+/* শুধুমাত্র active ক্লাস থাকা স্ক্রিন দৃশ্যমান হবে */
+.name-input-screen.active, .start-screen.active, .quiz-screen.active, .result-screen.active {
     display: block;
 }
 
