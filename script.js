@@ -20,7 +20,7 @@ const questions = [
         answer: "7.32 মিটার"
     },
     {
-        question: "ফ ফুটবলের পেনাল্টি স্পট থেকে গোল লাইন পর্যন্ত দূরত্ব কত?",
+        question: "ফুটবল পেনাল্টি স্পট থেকে গোল লাইন পর্যন্ত দূরত্ব কত?",
         options: ["9 মিটার", "11 মিটার", "12 মিটার", "13 মিটার"],
         answer: "11 মিটার"
     },
@@ -136,23 +136,23 @@ let answeredQuestions = new Array(questions.length).fill(false);
 let questionTimerInterval;
 const questionTimeLimit = 30;
 let questionTimeLeft;
-let userName = ''; // ব্যবহারকারীর নাম সংরক্ষণের জন্য নতুন ভেরিয়েবল
+let userName = ''; // ব্যবহারকারীর নাম সংরক্ষণের জন্য ভেরিয়েবল
 
 // DOM Elements
 const nameInputScreen = document.getElementById('nameInputScreen');
 const userNameInput = document.getElementById('userNameInput');
-const startQuizWithNameButton = document.getElementById('startQuizWithNameButton');
+const proceedToStartScreenButton = document.getElementById('proceedToStartScreenButton');
 const nameInputMessage = document.getElementById('nameInputMessage');
 
 const startScreen = document.getElementById('startScreen');
-const proceedToQuizButton = document.getElementById('proceedToQuizButton'); // নতুন বাটন রেফারেন্স
-
-const quizScreen = document.getElementById('quizScreen');
-const resultScreen = document.getElementById('resultScreen');
+const startButton = document.getElementById('startButton');
 
 const totalQuestionsInfo = document.getElementById('totalQuestionsInfo');
 const fullMarksInfo = document.getElementById('fullMarksInfo');
 const timeLimitInfo = document.getElementById('timeLimitInfo');
+
+const quizScreen = document.getElementById('quizScreen');
+const resultScreen = document.getElementById('resultScreen');
 
 const scoreDisplayElem = document.getElementById('scoreDisplay');
 const questionIndexDisplayElem = document.getElementById('questionIndexDisplay');
@@ -178,8 +178,8 @@ fullMarksInfo.textContent = questions.length;
 timeLimitInfo.textContent = Math.ceil(questions.length * questionTimeLimit / 60);
 
 // --- Event Listeners ---
-startQuizWithNameButton.addEventListener('click', handleNameInputAndProceed);
-proceedToQuizButton.addEventListener('click', startQuiz); // এই বাটন এখন কুইজ শুরু করবে
+proceedToStartScreenButton.addEventListener('click', handleNameInputAndShowStartScreen);
+startButton.addEventListener('click', startQuiz);
 
 nextButton.addEventListener('click', handleNextQuestion);
 skipButton.addEventListener('click', handleSkipQuestion);
@@ -187,7 +187,7 @@ submitButton.addEventListener('click', handleSubmitQuiz);
 
 
 // --- Name Input and Screen Flow ---
-function handleNameInputAndProceed() {
+function handleNameInputAndShowStartScreen() {
     const inputName = userNameInput.value.trim();
     if (inputName === '') {
         nameInputMessage.textContent = "আপনার নাম লিখুন কুইজ শুরু করার জন্য।";
@@ -198,11 +198,11 @@ function handleNameInputAndProceed() {
 
     nameInputScreen.classList.remove('active');
     startScreen.classList.add('active'); // নাম ইনপুট করার পর startScreen দেখান
-    displayRankings(); // র‍্যাঙ্কিং লোড করুন startScreen এ দেখানোর জন্য
+    // displayRankings(); // র‍্যাঙ্কিং শুধুমাত্র ফলাফলের স্ক্রিনে দেখানো হবে
 }
 
 
-function startQuiz() {
+function startQuiz() { // startScreen থেকে কুইজ শুরু করার ফাংশন
     startScreen.classList.remove('active');
     quizScreen.classList.add('active');
     resetQuizState(); // কুইজ স্টেট রিসেট করুন কুইজ শুরু করার আগে
@@ -300,7 +300,7 @@ function selectOption(selectedButton, selectedAnswer) {
     disableOptions();
 
     const currentQuestion = questions[currentQuestionIndex];
-    const correctAnswer = currentQuestion.answer; 
+    const correctAnswer = currentQuestion.answer;
 
     selectedButton.classList.add('selected');
 
@@ -350,7 +350,7 @@ function handleTimeUp() {
 
 function showAnswer() {
     const currentQuestion = questions[currentQuestionIndex];
-    const correctAnswer = currentQuestion.answer; 
+    const correctAnswer = currentQuestion.answer;
 
     Array.from(optionsContainer.children).forEach(optionBtn => {
         optionBtn.style.pointerEvents = 'none';
@@ -481,6 +481,6 @@ function displayRankings() {
     })
     .catch((error) => {
         console.error("র‍্যাঙ্কিং লোড করতে সমস্যা হয়েছে:", error);
-        rankListElem.innerHTML = '<li>র‍্যাঙ্কিং লোড করা যায়নি।</li>';
+        rankListElem.innerHTML = '<li>র র‍্যাঙ্কিং লোড করা যায়নি।</li>';
     });
 }
