@@ -20,7 +20,7 @@ const questions = [
         answer: "7.32 মিটার"
     },
     {
-        question: "ফুটবল পেনাল্টি স্পট থেকে গোল লাইন পর্যন্ত দূরত্ব কত?",
+        question: "ফ ফুটবলের পেনাল্টি স্পট থেকে গোল লাইন পর্যন্ত দূরত্ব কত?",
         options: ["9 মিটার", "11 মিটার", "12 মিটার", "13 মিটার"],
         answer: "11 মিটার"
     },
@@ -136,8 +136,17 @@ let answeredQuestions = new Array(questions.length).fill(false);
 let questionTimerInterval;
 const questionTimeLimit = 30;
 let questionTimeLeft;
+let userName = ''; // ব্যবহারকারীর নাম সংরক্ষণের জন্য নতুন ভেরিয়েবল
+
+// DOM Elements
+const nameInputScreen = document.getElementById('nameInputScreen');
+const userNameInput = document.getElementById('userNameInput');
+const startQuizWithNameButton = document.getElementById('startQuizWithNameButton');
+const nameInputMessage = document.getElementById('nameInputMessage');
 
 const startScreen = document.getElementById('startScreen');
+const proceedToQuizButton = document.getElementById('proceedToQuizButton'); // নতুন বাটন রেফারেন্স
+
 const quizScreen = document.getElementById('quizScreen');
 const resultScreen = document.getElementById('resultScreen');
 
@@ -161,27 +170,55 @@ const circumference = 2 * Math.PI * 35;
 progressRingBar.style.strokeDasharray = circumference;
 progressRingBar.style.strokeDashoffset = circumference;
 
-// Firebase র‍্যাঙ্কিং-এর জন্য নতুন DOM এলিমেন্ট রেফারেন্স
 const rankListElem = document.getElementById('rankList');
-
 
 // Set initial info on start screen
 totalQuestionsInfo.textContent = questions.length;
 fullMarksInfo.textContent = questions.length;
 timeLimitInfo.textContent = Math.ceil(questions.length * questionTimeLimit / 60);
 
-// Event Listeners
-startButton.addEventListener('click', startQuiz);
+// --- Event Listeners ---
+startQuizWithNameButton.addEventListener('click', handleNameInputAndProceed);
+proceedToQuizButton.addEventListener('click', startQuiz); // এই বাটন এখন কুইজ শুরু করবে
+
 nextButton.addEventListener('click', handleNextQuestion);
 skipButton.addEventListener('click', handleSkipQuestion);
 submitButton.addEventListener('click', handleSubmitQuiz);
 
 
+// --- Name Input and Screen Flow ---
+function handleNameInputAndProceed() {
+    const inputName = userNameInput.value.trim();
+    if (inputName === '') {
+        nameInputMessage.textContent = "আপনার নাম লিখুন কুইজ শুরু করার জন্য।";
+        return;
+    }
+    userName = inputName; // ব্যবহারকারীর নাম সংরক্ষণ করুন
+    nameInputMessage.textContent = ''; // মেসেজ মুছে ফেলুন
+
+    nameInputScreen.classList.remove('active');
+    startScreen.classList.add('active'); // নাম ইনপুট করার পর startScreen দেখান
+    displayRankings(); // র‍্যাঙ্কিং লোড করুন startScreen এ দেখানোর জন্য
+}
+
+
 function startQuiz() {
     startScreen.classList.remove('active');
     quizScreen.classList.add('active');
+    resetQuizState(); // কুইজ স্টেট রিসেট করুন কুইজ শুরু করার আগে
     loadQuestion();
     scoreDisplayElem.textContent = score;
+}
+
+function resetQuizState() {
+    currentQuestionIndex = 0;
+    score = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    skippedCount = 0;
+    selectedOption = null;
+    answeredQuestions = new Array(questions.length).fill(false);
+    clearInterval(questionTimerInterval); // নিশ্চিত করুন কোনো টাইমার চলছে না
 }
 
 
@@ -387,19 +424,18 @@ function handleSubmitQuiz() {
     displayRankings();
 }
 
-// নতুন ফাংশন: Firebase-এ ফলাফল সেভ করুন
+// Firebase-এ ফলাফল সেভ করুন
 function saveQuizResult() {
-    // ব্যবহারকারীর নাম ইনপুট নিন
-    const userName = prompt("কুইজ শেষ! আপনার নাম লিখুন যাতে র‍্যাঙ্কিং-এ যুক্ত করা যায়:");
+    // নিশ্চিত করুন ব্যবহারকারীর নাম আছে
     if (!userName) {
-        alert("নাম ছাড়া ফলাফল সেভ করা হবে না।");
+        console.error("ব্যবহারকারীর নাম পাওয়া যায়নি। ফলাফল সেভ করা যাবে না।");
+        alert("আপনার নাম ছাড়া ফলাফল সেভ করা যাবে না।");
         return;
     }
 
     // Firebase-এর 'quizResults' পাথে ডেটা পুশ করুন
-    // 'database' অবজেক্টটি index.html এ ইনিশিয়ালাইজ করা হয়েছে এবং গ্লোবাল স্কোপে উপলব্ধ
     database.ref('quizResults').push({
-        name: userName,
+        name: userName, // কুইজের শুরুতে নেওয়া নাম
         score: score.toFixed(2), // স্কোর দশমিক সংখ্যা হিসেবে সেভ করুন
         correct: correctCount,
         wrong: wrongCount,
@@ -417,12 +453,10 @@ function saveQuizResult() {
     });
 }
 
-// নতুন ফাংশন: Firebase থেকে র‍্যাঙ্কিং লোড এবং প্রদর্শন করুন
+// Firebase থেকে র‍্যাঙ্কিং লোড এবং প্রদর্শন করুন
 function displayRankings() {
-    // র‍্যাঙ্ক লিস্ট খালি করুন
     rankListElem.innerHTML = '<li>র‍্যাঙ্কিং লোড হচ্ছে...</li>';
 
-    // 'quizResults' থেকে স্কোর অনুযায়ী ডেটা নিয়ে আসুন (সর্বোচ্চ স্কোর প্রথমে)
     database.ref('quizResults').orderByChild('score').limitToLast(10).once('value', (snapshot) => {
         const rankings = [];
         snapshot.forEach((childSnapshot) => {
@@ -430,16 +464,16 @@ function displayRankings() {
             rankings.push(data);
         });
 
-        // স্কোর অনুযায়ী ডিসেন্ডিং অর্ডারে সর্ট করুন (সর্বোচ্চ স্কোর সবার উপরে)
+        // স্কোর অনুযায়ী ডিসেন্ডিং অর্ডারে সর্ট করুন
         rankings.sort((a, b) => b.score - a.score);
 
-        // র‍্যাঙ্ক লিস্ট প্রদর্শন করুন
-        rankListElem.innerHTML = ''; // পুরোনো "লোড হচ্ছে..." মেসেজ মুছে ফেলুন
+        rankListElem.innerHTML = '';
         if (rankings.length === 0) {
             rankListElem.innerHTML = '<li>এখনো কোনো র‍্যাঙ্কিং নেই।</li>';
         } else {
             rankings.forEach((entry, index) => {
                 const listItem = document.createElement('li');
+                // র‍্যাঙ্কিং এ ব্যবহারকারীর নাম দেখাচ্ছে
                 listItem.textContent = `${index + 1}. ${entry.name} - স্কোর: ${entry.score}`;
                 rankListElem.appendChild(listItem);
             });
@@ -450,8 +484,3 @@ function displayRankings() {
         rankListElem.innerHTML = '<li>র‍্যাঙ্কিং লোড করা যায়নি।</li>';
     });
 }
-
-// পেজ লোড হওয়ার সময় র‍্যাঙ্কিং প্রদর্শন করুন (যদি কোনো ডাটা থাকে)
-// এটি startScreen এ দেখাবে না, শুধু resultScreen এ যখন কুইজ শেষ হবে।
-// যদি আপনি স্টার্ট স্ক্রিনে র‍্যাঙ্কিং দেখাতে চান, তাহলে startQuiz ফাংশনের আগে এই লাইনটি যোগ করতে পারেন।
-// document.addEventListener('DOMContentLoaded', displayRankings); // এই লাইনটি আপাতত দরকার নেই, কারণ এটি কুইজ শেষে দেখানো হবে।
