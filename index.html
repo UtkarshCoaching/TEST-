@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Knowledge বিভিন্ন খেলার মাঠের পরিমাপ ও নিয়ম কানুন ( কাবাডি, ফুটবল )</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="start-screen active" id="startScreen">
+            <h1>General Knowledge- তারিখ- বিভিন্ন খেলার মাঠের পরিমাপ ও নিয়ম কানুন ( কাবাডি, ফুটবল )</h1>
+            <div class="info-item">বিষয়: <span>বিভিন্ন খেলার মাঠের পরিমাপ ও নিয়ম কানুন ( কাবাডি, ফুটবল )</span></div>
+            <div class="info-item">প্রশ্ন সংখ্যা: <span id="totalQuestionsInfo"></span></div>
+            <div class="info-item">পূর্ণমান: <span id="fullMarksInfo"></span></div>
+            <div class="info-item">সময়: <span id="timeLimitInfo"></span> মিনিট</div>
+            <div class="info-item">ভুল উত্তরের জন্য: <span>0.33</span> নাম্বার কাটা যাবে</div>
+            <button class="button" id="startButton">কুইজ শুরু করুন</button>
+        </div>
+
+        <div class="quiz-screen" id="quizScreen">
+            <div class="top-bar">
+                <div class="question-timer-circle">
+                    <svg class="progress-ring" width="80" height="80">
+                        <circle class="progress-ring-track" stroke="#d3d3d3" stroke-width="6" fill="transparent" r="35" cx="40" cy="40"/>
+                        <circle class="progress-ring-bar" stroke="#28a745" stroke-width="6" fill="transparent" r="35" cx="40" cy="40"/>
+                    </svg>
+                    <span class="question-timer-text" id="questionTimer">30</span>
+                </div>
+                <div class="score-display">SCORE: <span id="scoreDisplay">0</span></div>
+            </div>
+
+            <div class="question-index-display" id="questionIndexDisplay"></div>
+
+            <div class="question-text-box" id="questionTextBox"> </div>
+            
+            <div class="options-container" id="optionsContainer">
+            </div>
+            <div class="feedback-message" id="feedbackMessage"></div>
+
+            <div class="controls">
+                <button class="button navigation-button" id="nextButton">Next</button>
+                <button class="button navigation-button skip-button" id="skipButton">Skip</button>
+                <button class="button navigation-button submit-button" id="submitButton" style="display: none;">Submit</button>
+            </div>
+        </div>
+
+        <div class="result-screen" id="resultScreen">
+            <h2>কুইজের ফলাফল</h2>
+            <div class="result-details">
+                <p>মোট প্রশ্ন: <span id="finalTotalQuestions"></span></p>
+                <p>সঠিক উত্তর: <span id="correctAnswers"></span></p>
+                <p>ভুল উত্তর: <span id="wrongAnswers"></span></p>
+                <p>স্কিপ করা প্রশ্ন: <span id="skippedQuestions"></span></p>
+                <p>আপনার স্কোর: <span id="finalScore"></span></p>
+                <p>পূর্ণমান: <span id="finalFullMarks"></span></p>
+            </div>
+            <button class="button" onclick="location.reload()">আবার শুরু করুন</button>
+            
+            <div class="ranking-section">
+                <h2>সর্বোচ্চ স্কোর</h2>
+                <ol id="rankList"></ol>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    
+    <script>
+        // আপনার Firebase প্রোজেক্ট কনফিগারেশন - এটি আপনার Firebase Console থেকে পাওয়া
+        const firebaseConfig = {
+            apiKey: "AIzaSyDwGzTPmFg-gjoYtNWNJM47p22NfBugYFA",
+            authDomain: "mock-test-1eea6.firebaseapp.com",
+            databaseURL: "https://mock-test-1eea6-default-rtdb.firebaseio.com",
+            projectId: "mock-test-1eea6",
+            storageBucket: "mock-test-1eea6.firebasestorage.app",
+            messagingSenderId: "111849173136",
+            appId: "1:111849173136:web:8b211f58d854119e88a815",
+            measurementId: "G-5RLWPTP8YD" // এটি Google Analytics এর জন্য, ঐচ্ছিক
+        };
+
+        // Firebase ইনিশিয়ালাইজ করুন
+        firebase.initializeApp(firebaseConfig);
+        // Realtime Database এর রেফারেন্স তৈরি করুন
+        const database = firebase.database(); // এই 'database' অবজেক্টটি script.js এ ব্যবহার করা হবে
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>
